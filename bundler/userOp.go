@@ -1,6 +1,10 @@
 package bundler
 
-import "math/big"
+import (
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+)
 
 type UserOperation struct {
 	Sender               common.Address `json:"sender"               `
@@ -15,3 +19,9 @@ type UserOperation struct {
 	PaymasterAndData     []byte         `json:"paymasterAndData"     `
 	Signature            []byte         `json:"signature"            `
 }
+
+/*
+validation rules: Full validation rules must be applied between all Bundlers
+
+*/
+func ()

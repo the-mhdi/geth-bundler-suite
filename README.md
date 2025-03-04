@@ -1,1 +1,1 @@
-# geth-bundler-suite
+# a Robust Decentralized Ethereum Bondler for modular use along side eth-clients 

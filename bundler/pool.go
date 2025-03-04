@@ -5,6 +5,8 @@ import (
 )
 
 type poolConf struct {
+	poolType string //public - private
+
 }
 
 type Pool struct {
