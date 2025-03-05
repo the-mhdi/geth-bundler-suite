@@ -22,6 +22,5 @@ type UserOperation struct {
 
 /*
 validation rules: Full validation rules must be applied between all Bundlers
-
 */
-func ()
+func userOpValidation() {}
