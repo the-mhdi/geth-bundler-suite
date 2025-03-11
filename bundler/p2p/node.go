@@ -1,4 +1,4 @@
-package bundler
+package node
 
 /*
 Full validation rules must be applied between all Bundlers.
