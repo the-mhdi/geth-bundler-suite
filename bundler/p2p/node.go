@@ -12,20 +12,3 @@ type nodeRuleSet struct {
 
 type node struct {
 }
-
-func (rs *nodeRuleSet) Ruleset() nodeRuleSet {
-
-	return *rs
-}
-
-func peerRuleSetCheck() {
-
-}
-
-func NewPeerValidation() {
-	peerRuleSetCheck()
-}
-
-func Monitor() {}
-
-func Loop() {}
