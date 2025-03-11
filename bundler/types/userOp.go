@@ -1,9 +1,11 @@
-package bundler
+package types
 
 import (
+	"encoding/json"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/holiman/uint256"
 )
 
 type UserOperation struct {
@@ -22,7 +24,7 @@ type UserOperation struct {
 
 }
 
-func genUserOp() *UserOperatio	n {
+func genUserOp() *UserOperation {
 	return &UserOperation{}
 }
 
@@ -31,11 +33,6 @@ func HandleUserOp() {}
 /*
 validation rules: Full validation rules must be applied between all Bundlers
 */
-
-func ValidationPhase(userOp userOperation) {}
-
-func ExecutionPhase() {}
-
 
 // MarshalJSON custom marshaller to handle uint256.Int as hex string
 func (uop *UserOperation) MarshalJSON() ([]byte, error) {
@@ -65,8 +62,8 @@ func (uop *UserOperation) UnmarshalJSON(data []byte) error {
 		// Should not happen as hex string is validated by uint256.Int.SetFromHexString
 		// but return error just in case
 		return &json.UnmarshalTypeError{
-			Value: "hex string",
-			Type:  &uint256.Int{},
+			Value:  "hex string",
+			Type:   &uint256.Int{},
 			Offset: 0, // You might want to adjust this based on your needs
 			Struct: "UserOperation",
 			Field:  "Nonce",
