@@ -5,5 +5,9 @@ import (
 )
 
 type handler struct {
-	nodeID enode.ID //
+	nodeID     enode.ID //as the geth node with "bnode" prefix
+	networkID  uint64   // as the geth node
+	uoPool     Pool
+	maxPeers   int
+	aggregator []byte
 }
