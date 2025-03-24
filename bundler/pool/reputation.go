@@ -29,7 +29,7 @@ type ReputationManager struct {
 	mu         sync.RWMutex
 }
 
-func New(db *ethdb.Database) *ReputationManager {
+func New(db ethdb.Database) *ReputationManager {
 
 	return &ReputationManager{
 		Reputation: make(map[common.Address]*ReputationParams),
@@ -41,42 +41,56 @@ func (rm *ReputationManager) UpdateOpsSeen(entity common.Address) error {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
 
-	value, ok := rm.Reputation[entity]    //entity already cached in memory
-	has, err := rm.db.Has(entity.Bytes()) //retrieves the entity from persistent database
+	rp, err := rm.getEntity(entity)
 
 	if err != nil {
 		return err
 	}
 
+	rp.OpsSeen++
+	err = rm.db.Put(entity.Bytes(), rm.Reputation[entity].Bytes())
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams, error) {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+	value, ok := rm.Reputation[entity] //entity already cached in memory
+
 	if ok {
 		//if entity reputation is already loaded in the memory
-		value.OpsSeen++ //increment
-
-		err := rm.db.Put(entity.Bytes(), value.Bytes()) //update db
-
-		if err != nil {
-			return err
-		}
+		return value, nil
 	}
 
-	if has && !ok {
+	has, err := rm.db.Has(entity.Bytes()) //retrieves the entity from persistent database
+	if err != nil {
+		return nil, err
+	}
+
+	if has {
 		//entity exists in the db but not loaded into memory
 		rp, err := rm.db.Get(entity.Bytes())
-		rm.Reputation[entity] = new(ReputationParams)
-
-	}
-
-	if !ok && !has {
-		//first time the entity being seen
-		rm.Reputation[entity] = new(ReputationParams)
-
-		err := rm.db.Put(entity.Bytes(), new(ReputationParams).Bytes())
-
 		if err != nil {
-			return err
+			return nil, err
 		}
 
+		return decode(rp), nil
 	}
+
+	rm.Reputation[entity] = new(ReputationParams)
+
+	err = rm.db.Put(entity.Bytes(), rm.Reputation[entity].Bytes())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rm.Reputation[entity], nil
 
 }
 
