@@ -1,10 +1,6 @@
-package bundler
+package mempool
 
 import (
-	"sync"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/holiman/uint256"
 )
 
@@ -33,39 +29,5 @@ var (
 	VALIDATION_GAS_SLACK                           = 4000   // An amount of gas that must be added to the estimations of verificationGasLimit and paymasterVerificationGasLimit
 )
 
-type Pool interface {
-	Pooltype() string
-}
-
-type poolConfig struct {
-}
-
-type canonicalMempool struct {
-	poolConfig
-	uOp sync.Map
-}
-
-type NewPooledUserOperationHashesPacket struct {
-	Types  []byte
-	Sizes  []uint32
-	Hashes []common.Hash
-}
-
-// GetPooledTransactionsRequest represents a transaction query.
-type GetPooledUserOperationRequest []common.Hash
-
-// GetPooledUserOperationRequest represents a uop query with request ID wrapping.
-type GetPooledUserOperationPacket struct {
-	RequestId uint64
-	GetPooledUserOperationRequest
-}
-
-// PooledUserOperationResponse is the network packet for uop distribution.
-type PooledUserOperationResponse []*types.Transaction
-
-// PooledUserOperationPacket is the network packet for uop distribution
-// with request ID wrapping.
-type PooledUserOperationPacket struct {
-	RequestId uint64
-	PooledUserOperationResponse
+type poolConf struct {
 }
