@@ -16,6 +16,9 @@ const (
 	THROTTLED = 1
 	BANNED    = 2
 )
+const (
+	Hour int64 = 3600
+)
 
 type ReputationParams struct {
 	OpsSeen      int64 //valid UserOperations seen by bundler
@@ -50,8 +53,9 @@ func (rm *ReputationManager) UpdateOpsSeen(entity common.Address) error {
 		return err
 	}
 
+	rp.refresh()
 	rp.OpsSeen++
-	rp.LastUpdate = time.Now()
+	rp.LastSeen = time.Now()
 
 	err = rm.db.Put(entity.Bytes(), rp.Bytes())
 
@@ -67,15 +71,13 @@ func (rm *ReputationManager) UpdateOpsIncluded(entity common.Address) error {
 	defer rm.mu.Unlock()
 
 	rp, err := rm.getEntity(entity)
-
-	rp.refreshRate()
-
 	if err != nil {
 		return err
 	}
 
+	rp.refresh()
 	rp.OpsIncluded++
-	rp.LastUpdate = time.Now()
+	rp.LastIncluded = time.Now()
 
 	err = rm.db.Put(entity.Bytes(), rp.Bytes())
 
@@ -84,6 +86,26 @@ func (rm *ReputationManager) UpdateOpsIncluded(entity common.Address) error {
 	}
 
 	return nil
+}
+
+func (rm *ReputationManager) GetStatus(entity common.Address) (int, error) {
+	rp, err := rm.getEntity(entity)
+	if err != nil {
+		return 404, err // idk why 4 ?
+	}
+
+	max_seen := rp.OpsSeen / MIN_INCLUSION_RATE_DENOMINATOR
+
+	if max_seen > (rp.OpsIncluded + BAN_SLACK) {
+		return BANNED, nil
+	}
+
+	if max_seen > (rp.OpsIncluded + THROTTLING_SLACK) {
+		return THROTTLED, nil
+	}
+
+	return OK, nil
+
 }
 
 func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams, error) {
@@ -128,16 +150,35 @@ func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams
 
 }
 
-func (rp *ReputationParams) refreshRate() error {
+func (rp *ReputationParams) refresh() {
 	now := time.Now().Unix()
 
 	PastSeen := rp.LastSeen.Unix() - now
 	PastIncluded := rp.LastIncluded.Unix() - now
 
-	if PastSeen >= 3600 || PastIncluded >= 3600 {
+	if PastSeen >= Hour {
+
+		rate := (PastSeen / Hour)
+
+		for i := rate; i > 0; i++ {
+
+			rp.OpsSeen = (rp.OpsSeen * 23) / 24
+
+		}
 
 	}
 
+	if PastIncluded >= Hour {
+
+		rate := (PastIncluded / Hour)
+
+		for i := rate; i > 0; i++ {
+
+			rp.OpsIncluded = (rp.OpsIncluded * 23) / 24
+
+		}
+
+	}
 }
 
 func (rp *ReputationParams) Bytes() []byte {

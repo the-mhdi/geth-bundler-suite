@@ -15,9 +15,9 @@ var (
 	THROTTLED_ENTITY_MEMPOOL_COUNT                 = 4                                    //Number of UserOperations with a throttled entity that can stay in the mempool
 	THROTTLED_ENTITY_LIVE_BLOCKS                   = 10                                   // Number of blocks a UserOperations with a throttled entity can stay in mempool
 	THROTTLED_ENTITY_BUNDLE_COUNT                  = 4                                    //Number of UserOperations with a throttled entity that can be added in a single bundle
-	MIN_INCLUSION_RATE_DENOMINATOR                 = 10                                   //A denominator of a formula for entity reputation calculation
-	THROTTLING_SLACK                               = 10                                   //Part of a reputation formula that allows entities to legitimately reject some transactions without being throttled
-	BAN_SLACK                                      = 50
+	MIN_INCLUSION_RATE_DENOMINATOR     int64       = 10                                   //A denominator of a formula for entity reputation calculation
+	THROTTLING_SLACK                   int64       = 10                                   //Part of a reputation formula that allows entities to legitimately reject some transactions without being throttled
+	BAN_SLACK                          int64       = 50
 	BAN_OPS_SEEN_PENALTY                           = 10000 // A value to put into the opsSeen counter of entity to declare as banned
 	MAX_OPS_ALLOWED_UNSTAKED_ENTITY                = 10000
 	PRE_VERIFICATION_OVERHEAD_GAS                  = 50000  //Gas used by the EntryPoint per UserOp that cannot be tracked on-chain
