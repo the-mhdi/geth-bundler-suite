@@ -18,11 +18,12 @@ const (
 )
 
 type ReputationParams struct {
-	OpsSeen     int64 //valid UserOperations seen by bundler
-	OpsIncluded int64
-	Status      int64
-	Blacklisted bool
-	LastUpdate  time.Time
+	OpsSeen      int64 //valid UserOperations seen by bundler
+	OpsIncluded  int64
+	Status       int64
+	Blacklisted  bool
+	LastSeen     time.Time
+	LastIncluded time.Time
 }
 
 type ReputationManager struct {
@@ -67,6 +68,8 @@ func (rm *ReputationManager) UpdateOpsIncluded(entity common.Address) error {
 
 	rp, err := rm.getEntity(entity)
 
+	rp.refreshRate()
+
 	if err != nil {
 		return err
 	}
@@ -84,8 +87,6 @@ func (rm *ReputationManager) UpdateOpsIncluded(entity common.Address) error {
 }
 
 func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams, error) {
-	rm.mu.Lock()
-	defer rm.mu.Unlock()
 	value, ok := rm.Reputation[entity] //entity already cached in memory
 
 	if ok {
@@ -108,7 +109,14 @@ func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams
 		return decode(rp), nil
 	}
 
-	rm.Reputation[entity] = new(ReputationParams)
+	rm.Reputation[entity] = &ReputationParams{
+		OpsSeen:      0,
+		OpsIncluded:  0,
+		Status:       0,
+		Blacklisted:  false,
+		LastSeen:     time.Now(),
+		LastIncluded: time.Now(),
+	}
 
 	err = rm.db.Put(entity.Bytes(), rm.Reputation[entity].Bytes())
 
@@ -117,6 +125,18 @@ func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams
 	}
 
 	return rm.Reputation[entity], nil
+
+}
+
+func (rp *ReputationParams) refreshRate() error {
+	now := time.Now().Unix()
+
+	PastSeen := rp.LastSeen.Unix() - now
+	PastIncluded := rp.LastIncluded.Unix() - now
+
+	if PastSeen >= 3600 || PastIncluded >= 3600 {
+
+	}
 
 }
 
