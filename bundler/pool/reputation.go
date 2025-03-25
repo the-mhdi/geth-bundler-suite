@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"sync"
+	"time"
 	"unsafe"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -21,6 +22,7 @@ type ReputationParams struct {
 	OpsIncluded int64
 	Status      int64
 	Blacklisted bool
+	LastUpdate  time.Time
 }
 
 type ReputationManager struct {
@@ -48,7 +50,31 @@ func (rm *ReputationManager) UpdateOpsSeen(entity common.Address) error {
 	}
 
 	rp.OpsSeen++
-	err = rm.db.Put(entity.Bytes(), rm.Reputation[entity].Bytes())
+	rp.LastUpdate = time.Now()
+
+	err = rm.db.Put(entity.Bytes(), rp.Bytes())
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (rm *ReputationManager) UpdateOpsIncluded(entity common.Address) error {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+
+	rp, err := rm.getEntity(entity)
+
+	if err != nil {
+		return err
+	}
+
+	rp.OpsIncluded++
+	rp.LastUpdate = time.Now()
+
+	err = rm.db.Put(entity.Bytes(), rp.Bytes())
 
 	if err != nil {
 		return err
