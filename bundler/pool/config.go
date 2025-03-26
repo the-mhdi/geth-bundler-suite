@@ -29,5 +29,4 @@ var (
 	VALIDATION_GAS_SLACK                           = 4000   // An amount of gas that must be added to the estimations of verificationGasLimit and paymasterVerificationGasLimit
 )
 
-type poolConf struct {
-}
+type poolOptions struct{}
