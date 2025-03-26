@@ -165,14 +165,14 @@ func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams
 func (rp *ReputationParams) refresh() {
 	now := time.Now().Unix()
 
-	PastSeen := rp.LastSeen.Unix() - now
-	PastIncluded := rp.LastIncluded.Unix() - now
+	PastSeen := (rp.LastSeen.Unix() - now)
+	PastIncluded := (rp.LastIncluded.Unix() - now)
 
 	if PastSeen >= anHour {
 
 		rate := (PastSeen / anHour)
 
-		for i := rate; i > 0; i++ {
+		for i := rate; i > 0; i-- {
 
 			rp.OpsSeen = (rp.OpsSeen * 23) / 24
 
@@ -184,7 +184,7 @@ func (rp *ReputationParams) refresh() {
 
 		rate := (PastIncluded / anHour)
 
-		for i := rate; i > 0; i++ {
+		for i := rate; i > 0; i-- {
 
 			rp.OpsIncluded = (rp.OpsIncluded * 23) / 24
 
