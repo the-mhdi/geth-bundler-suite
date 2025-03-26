@@ -7,7 +7,7 @@ import (
 
 type NewPooledUserOperationHashesPacket struct {
 	Types  []byte
-	Sizes  []uint32
+	Sizes  []uint32s
 	Hashes []common.Hash
 }
 
