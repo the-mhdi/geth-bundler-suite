@@ -5,10 +5,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-type Pool interface {
-	Pooltype() string
-}
-
 type NewPooledUserOperationHashesPacket struct {
 	Types  []byte
 	Sizes  []uint32
