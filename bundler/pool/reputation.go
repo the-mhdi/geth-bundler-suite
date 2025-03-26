@@ -17,7 +17,7 @@ const (
 	BANNED    = 2
 )
 const (
-	Hour int64 = 3600
+	anHour int64 = 3600
 )
 
 type ReputationParams struct {
@@ -31,11 +31,11 @@ type ReputationParams struct {
 
 type ReputationManager struct {
 	Reputation map[common.Address]*ReputationParams //entity-> reputaion //for memory cached fast lookup
-	db         ethdb.Database                       //local db
+	db         ethdb.KeyValueStore                  //ethdb.Database                       //local db
 	mu         sync.RWMutex
 }
 
-func New(db ethdb.Database) *ReputationManager {
+func New(db ethdb.KeyValueStore) *ReputationManager {
 
 	return &ReputationManager{
 		Reputation: make(map[common.Address]*ReputationParams),
@@ -88,27 +88,39 @@ func (rm *ReputationManager) UpdateOpsIncluded(entity common.Address) error {
 	return nil
 }
 
-func (rm *ReputationManager) GetStatus(entity common.Address) (int, error) {
+func (rm *ReputationManager) GetStatus(entity common.Address) (int64, error) {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+
 	rp, err := rm.getEntity(entity)
+
 	if err != nil {
-		return 404, err // idk why 4 ?
+		return rp.Status, err
 	}
 
 	max_seen := rp.OpsSeen / MIN_INCLUSION_RATE_DENOMINATOR
 
 	if max_seen > (rp.OpsIncluded + BAN_SLACK) {
-		return BANNED, nil
+
+		rp.Status = BANNED
+
+		return rp.Status, nil
 	}
 
 	if max_seen > (rp.OpsIncluded + THROTTLING_SLACK) {
-		return THROTTLED, nil
+
+		rp.Status = THROTTLED
+
+		return rp.Status, nil
 	}
 
-	return OK, nil
+	rp.Status = OK
+	return rp.Status, nil
 
 }
 
 func (rm *ReputationManager) getEntity(entity common.Address) (*ReputationParams, error) {
+
 	value, ok := rm.Reputation[entity] //entity already cached in memory
 
 	if ok {
@@ -156,9 +168,9 @@ func (rp *ReputationParams) refresh() {
 	PastSeen := rp.LastSeen.Unix() - now
 	PastIncluded := rp.LastIncluded.Unix() - now
 
-	if PastSeen >= Hour {
+	if PastSeen >= anHour {
 
-		rate := (PastSeen / Hour)
+		rate := (PastSeen / anHour)
 
 		for i := rate; i > 0; i++ {
 
@@ -168,9 +180,9 @@ func (rp *ReputationParams) refresh() {
 
 	}
 
-	if PastIncluded >= Hour {
+	if PastIncluded >= anHour {
 
-		rate := (PastIncluded / Hour)
+		rate := (PastIncluded / anHour)
 
 		for i := rate; i > 0; i++ {
 
