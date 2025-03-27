@@ -6,7 +6,7 @@ import (
 )
 
 type ValidationManager interface {
-	isValid() bool
+	isValid() (bool, error)
 	userOperation() *types.UserOperation
 	atBlockHash() common.Hash
 }
