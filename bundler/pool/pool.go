@@ -39,6 +39,7 @@ type Pool interface {
 type memPool struct {
 	Reputation *ReputationManager
 	Validation *ValidationManager
+	Simulation *simulationManager
 }
 
 func (p *memPool) SubmitTopool(up *types.UserOperation) error {
