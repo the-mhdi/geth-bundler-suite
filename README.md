@@ -1,1 +1,1 @@
-# a Robust Decentralized Ethereum Bondler for modular use along side eth-clients 
+# a Robust Decentralized Ethereum Bondler With Public Mempool for modular use along side geth-clients 
