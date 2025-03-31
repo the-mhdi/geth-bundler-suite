@@ -43,6 +43,17 @@ func (m *Monitor) getDepositInfo(account common.Address) {
 		m.EntryPoint[account] = entrypoint.NewEntryPoint()
 	}
 	contract := m.EntryPoint[account].Instance(m.eth, account)
-	depositInfo := new(entrypoint.IStakeManagerDepositInfo)
-	contract.Call(nil, depositInfo, "getDepositInfo", account)
+	if contract == nil {
+		return
+	} // handle error
+	// Call the getDepositInfo function on the EntryPoint contract
+	var depositInfo []any
+	contract.Call(nil, &depositInfo, "getDepositInfo", account)
+
+	// Process the depositInfo as needed
+	// For example, you can extract the deposit amount and other relevant information
+	// depositAmount := depositInfo[0] // Assuming the first element is the deposit amount
+	// otherInfo := depositInfo[1:]    // Other relevant information
+	// You can now use the deposit amount and other information for further processing
+	// Example: Print the deposit amount
 }
