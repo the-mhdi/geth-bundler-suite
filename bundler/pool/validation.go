@@ -53,10 +53,10 @@ func (m *Monitor) getDepositInfo(account common.Address) {
 	err := contract.Call(nil, &depositInfo, "getDepositInfo", account)
 
 	if err != nil {
-		return *new(IStakeManagerDepositInfo), err
+		return *new(entrypoint.IStakeManagerDepositInfo)
 	}
 
-	out0 := *abi.ConvertType(depositInfo[0], new(IStakeManagerDepositInfo)).(*IStakeManagerDepositInfo)
+	out0 := *abi.ConvertType(depositInfo[0], new(entrypoint.IStakeManagerDepositInfo)).(*entrypoint.IStakeManagerDepositInfo)
 
 	// Process the depositInfo as needed
 	// For example, you can extract the deposit amount and other relevant information
