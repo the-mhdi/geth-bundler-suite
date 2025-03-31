@@ -1,6 +1,7 @@
 package mempool
 
 import (
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/the-mhdi/geth-bundler-suite/bundler/bindings/entrypoint"
@@ -46,9 +47,16 @@ func (m *Monitor) getDepositInfo(account common.Address) {
 	if contract == nil {
 		return
 	} // handle error
+
 	// Call the getDepositInfo function on the EntryPoint contract
 	var depositInfo []any
-	contract.Call(nil, &depositInfo, "getDepositInfo", account)
+	err := contract.Call(nil, &depositInfo, "getDepositInfo", account)
+
+	if err != nil {
+		return *new(IStakeManagerDepositInfo), err
+	}
+
+	out0 := *abi.ConvertType(depositInfo[0], new(IStakeManagerDepositInfo)).(*IStakeManagerDepositInfo)
 
 	// Process the depositInfo as needed
 	// For example, you can extract the deposit amount and other relevant information
