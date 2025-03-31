@@ -1,2 +1,4 @@
-package mempool 
+package mempool
 
+type simulationManager struct {
+}
