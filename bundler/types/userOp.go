@@ -37,3 +37,5 @@ type authorizationTuple struct {
 	r        []byte
 	s        []byte
 }
+
+func 

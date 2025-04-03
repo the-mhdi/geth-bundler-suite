@@ -38,7 +38,7 @@ func EREP010(uo *types.UserOperation, eth *ethclient.Client) {
 
 }
 
-func (m *Monitor) getDepositInfo(account common.Address) {
+func (m *Monitor) getDepositInfo(account common.Address) entrypoint.IStakeManagerDepositInfo {
 
 	if _, ok := m.EntryPoint[account]; !ok {
 		m.EntryPoint[account] = entrypoint.NewEntryPoint()
