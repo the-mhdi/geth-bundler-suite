@@ -7,20 +7,21 @@ import (
 )
 
 type UserOperation struct {
-	Sender                        common.Address `json:"sender"               mapstructure:"sender"               validate:"required"`
-	Nonce                         *big.Int       `json:"nonce"                mapstructure:"nonce"                validate:"required"`
-	InitCode                      []byte         `json:"initCode"             mapstructure:"initCode"             validate:"required"`
-	CallData                      []byte         `json:"callData"             mapstructure:"callData"             validate:"required"`
-	CallGasLimit                  *big.Int       `json:"callGasLimit"         mapstructure:"callGasLimit"         validate:"required"`
-	VerificationGasLimit          *big.Int       `json:"verificationGasLimit" mapstructure:"verificationGasLimit" validate:"required"`
-	PreVerificationGas            *big.Int       `json:"preVerificationGas"   mapstructure:"preVerificationGas"   validate:"required"`
-	MaxFeePerGas                  *big.Int       `json:"maxFeePerGas"         mapstructure:"maxFeePerGas"         validate:"required"`
-	MaxPriorityFeePerGas          *big.Int       `json:"maxPriorityFeePerGas" mapstructure:"maxPriorityFeePerGas" validate:"required"`
-	Paymaster                     common.Address `json:"Paymaster"			mapstructure:"Paymaster"			  validate:"required"`
-	PaymasterData                 []byte         `json:"PaymasterData"     mapstructure:"PaymasterData"     validate:"required"`
-	PaymasterVerificationGasLimit *big.Int       `json:"paymasterVerificationGasLimit"     mapstructure:"paymasterVerificationGasLimit"     validate:"required"`
-	PaymasterPostOpGasLimit       *big.Int       `json:"paymasterPostOpGasLimit"     mapstructure:"paymasterPostOpGasLimit"     validate:"required"`
-	Signature                     []byte         `json:"signature"            mapstructure:"signature"            validate:"required"`
+	Sender                        common.Address `json:"sender"`
+	Nonce                         *big.Int       `json:"nonce"`
+	InitCode                      []byte         `json:"initCode"`
+	CallData                      []byte         `json:"callData"`
+	CallGasLimit                  *big.Int       `json:"callGasLimit"`
+	VerificationGasLimit          *big.Int       `json:"verificationGasLimit"`
+	PreVerificationGas            *big.Int       `json:"preVerificationGas"`
+	MaxFeePerGas                  *big.Int       `json:"maxFeePerGas"`
+	MaxPriorityFeePerGas          *big.Int       `json:"maxPriorityFeePerGas"`
+	Paymaster                     common.Address `json:"Paymaster"`
+	PaymasterData                 []byte         `json:"PaymasterData"`
+	PaymasterVerificationGasLimit *big.Int       `json:"paymasterVerificationGasLimit"`
+	PaymasterPostOpGasLimit       *big.Int       `json:"paymasterPostOpGasLimit"`
+	paymasterAndData              []byte         //or 0.6 ep only
+	Signature                     []byte         `json:"signature"`
 	Factory                       common.Address //empty if none
 	FactoryData                   []byte
 	EntryPoint                    common.Address
@@ -38,4 +39,10 @@ type authorizationTuple struct {
 	s        []byte
 }
 
-func 
+func (op *UserOperation) GetUserOpHash(entryPoint common.Address, chainID *big.Int) common.Hash {
+
+}
+
+func (op *UserOperation) Pack() PackedUserOperation {
+
+}

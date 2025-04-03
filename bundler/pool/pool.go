@@ -42,6 +42,6 @@ type memPool struct {
 	Simulation *simulationManager
 }
 
-func (p *memPool) SubmitTopool(up *types.UserOperation) error {
+func (p *memPool) Add(up *types.UserOperation) error {
 
 }
