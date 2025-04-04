@@ -48,7 +48,21 @@ func (op *UserOperation) Pack() PackedUserOperation {
 }
 
 func (op *UserOperation) getPaymasterAndData() []byte {
-	if op.PaymasterData == nil {
-		//paymaster_verification_gas_limit + paymaster_post_op_gas_limit + paymaster_data +
-	}
+
+	//paymaster_verification_gas_limit + paymaster_post_op_gas_limit + paymaster_data +
+
+	//todo:check if getpaymasteranddata can be formed
+
+	//If PaymasterVerificationGasLimit or PaymasterPostOpGasLimit can be nil, you should add checks to handle those cases.
+
+	// Convert PaymasterVerificationGasLimit and PaymasterPostOpGasLimit to byte slices
+	paymasterVerificationGasLimitBytes := op.PaymasterVerificationGasLimit.Bytes()
+	paymasterPostOpGasLimitBytes := op.PaymasterPostOpGasLimit.Bytes()
+
+	// Concatenate the byte slices
+	result := append(paymasterVerificationGasLimitBytes, paymasterPostOpGasLimitBytes...)
+	result = append(result, op.PaymasterData...)
+
+	return result
+
 }
