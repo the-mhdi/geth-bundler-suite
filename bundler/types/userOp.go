@@ -30,6 +30,17 @@ type UserOperation struct {
 	Aggregator                    common.Address     //also known as "authorizer contract" - a contract that enables multiple UserOperations to share a single validation
 }
 
+type PackedUserOperation struct {
+	Sender             common.Address `json:"sender"`
+	Nonce              *big.Int       `json:"nonce"`
+	InitCode           []byte         `json:"initCode"`
+	CallData           []byte         `json:"callData"`
+	AccountGasLimits   []byte         `json:"accountGasLimits"` //concatenation of verificationGasLimit (16 bytes) and callGasLimit (16 bytes)
+	PreVerificationGas *big.Int       `json:"preVerificationGas"`
+	GasFees            []byte         `json:"gasFees"` //concatenation of maxPriorityFeePerGas (16 bytes) and maxFeePerGas (16 bytes)
+	Signature          []byte         `json:"signature"`
+	paymasterAndData   []byte         `json:"paymasterAndData"`
+}
 type authorizationTuple struct {
 	ChainID  uint64
 	Address  common.Address
@@ -44,6 +55,82 @@ func (op *UserOperation) GetUserOpHash(entryPoint common.Address, chainID *big.I
 }
 
 func (op *UserOperation) Pack() PackedUserOperation {
+
+	//pack the UserOperation struct into PackedUserOperation struct
+
+	packed := PackedUserOperation{}
+
+	packed.Sender = op.Sender
+
+	packed.Nonce = op.Nonce
+
+	packed.InitCode = op.InitCode
+
+	packed.CallData = op.CallData
+
+	packed.PreVerificationGas = op.PreVerificationGas
+
+	packed.AccountGasLimits = op.getAccountGasLimits()
+
+	packed.GasFees = op.getGasFees()
+
+	packed.paymasterAndData = op.getPaymasterAndData()
+
+	return packed
+}
+
+func (op *UserOperation) Unpack(packed PackedUserOperation) UserOperation {
+
+	//unpack the PackedUserOperation struct into UserOperation struct
+
+	op.Sender = packed.Sender
+
+	op.Nonce = packed.Nonce
+
+	op.InitCode = packed.InitCode
+
+	op.CallData = packed.CallData
+
+	op.PreVerificationGas = packed.PreVerificationGas
+
+	op.CallGasLimit = new(big.Int).SetBytes(packed.AccountGasLimits[16:])
+
+	op.VerificationGasLimit = new(big.Int).SetBytes(packed.AccountGasLimits[:16])
+
+	op.MaxPriorityFeePerGas = new(big.Int).SetBytes(packed.GasFees[16:])
+
+	op.MaxFeePerGas = new(big.Int).SetBytes(packed.GasFees[:16])
+
+	op.paymasterAndData = packed.paymasterAndData
+
+	return *op
+}
+
+func (op *UserOperation) getAccountGasLimits() []byte {
+
+	//verificationGasLimit + callGasLimit
+
+	verificationGasLimitBytes := op.VerificationGasLimit.Bytes()
+
+	callGasLimitBytes := op.CallGasLimit.Bytes()
+
+	result := append(verificationGasLimitBytes, callGasLimitBytes...)
+
+	return result
+
+}
+
+func (op *UserOperation) getGasFees() []byte {
+
+	//maxPriorityFeePerGas + maxFeePerGas
+
+	maxPriorityFeePerGasBytes := op.MaxPriorityFeePerGas.Bytes()
+
+	maxFeePerGasBytes := op.MaxFeePerGas.Bytes()
+
+	result := append(maxPriorityFeePerGasBytes, maxFeePerGasBytes...)
+
+	return result
 
 }
 
