@@ -46,3 +46,9 @@ func (op *UserOperation) GetUserOpHash(entryPoint common.Address, chainID *big.I
 func (op *UserOperation) Pack() PackedUserOperation {
 
 }
+
+func (op *UserOperation) getPaymasterAndData() []byte {
+	if op.PaymasterData == nil {
+		//paymaster_verification_gas_limit + paymaster_post_op_gas_limit + paymaster_data +
+	}
+}
