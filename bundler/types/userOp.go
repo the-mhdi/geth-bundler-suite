@@ -56,12 +56,22 @@ func (op *UserOperation) getPaymasterAndData() []byte {
 	//If PaymasterVerificationGasLimit or PaymasterPostOpGasLimit can be nil, you should add checks to handle those cases.
 
 	// Convert PaymasterVerificationGasLimit and PaymasterPostOpGasLimit to byte slices
+
+	var result []byte
+
+	paymasterAddressBytes := op.Paymaster.Bytes()
+
 	paymasterVerificationGasLimitBytes := op.PaymasterVerificationGasLimit.Bytes()
+
 	paymasterPostOpGasLimitBytes := op.PaymasterPostOpGasLimit.Bytes()
 
-	// Concatenate the byte slices
-	result := append(paymasterVerificationGasLimitBytes, paymasterPostOpGasLimitBytes...)
+	result = append(result, paymasterAddressBytes...)
+	result = append(result, paymasterVerificationGasLimitBytes...)
+	result = append(result, paymasterPostOpGasLimitBytes...)
 	result = append(result, op.PaymasterData...)
+
+	// Concatenate the byte slices
+	//result := append(paymasterVerificationGasLimitBytes, paymasterPostOpGasLimitBytes...)
 
 	return result
 
